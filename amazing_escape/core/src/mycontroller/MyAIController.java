@@ -9,6 +9,7 @@ import tilelogic.TileInterpreter;
 import tilelogic.TileInterpreterFactory;
 import utilities.Coordinate;
 import world.Car;
+import tilelogic.LogicTile;
 /** SWEN30006 Software Modeling and Design
 MyAIController class
 George Juliff - 624946
@@ -31,7 +32,7 @@ public class MyAIController extends CarController{
 	@Override
 	public void update(float delta) {
 		// Gotta figure some why to cast this if we want the strat pattern to be correct /////////////////////////////////////////////////////////
-		HashMap<Coordinate, LogicTile> map = interpreter.ProcessMap(getView())
+		HashMap<Coordinate, Object> map = interpreter.ProcessMap(getView());
 		
 	}
 

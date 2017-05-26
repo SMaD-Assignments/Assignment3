@@ -7,6 +7,15 @@ Thomas Miles - 626263
 
 Represents a move that is being take by the car for a time step
 */
-public class Move {
 
+import world.Car;
+import world.WorldSpatial;
+
+public class Move {
+	
+	public static enum State { FORWARD, REVERSE };
+	
+	public WorldSpatial.RelativeDirection direction;
+	
+	
 }

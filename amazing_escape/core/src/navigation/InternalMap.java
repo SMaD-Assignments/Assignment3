@@ -7,6 +7,17 @@ Thomas Miles - 626263
 
 Records a history of previously and currently visible tiles
 */
-public class InternalMap {
 
+import java.util.HashMap;
+
+import tiles.MapTile;
+import utilities.Coordinate;
+
+ 
+
+public class InternalMap {
+	public HashMap<Coordinate,MapTile> map(){
+		return null;
+	}
+	
 }

@@ -105,7 +105,7 @@ public class Car extends Sprite{
 
 
 	public void update(float delta) {
-		if(Simulation.DEBUG_MODE){
+		if(false){
 			printDebug();
 		}
 		checkHealth();

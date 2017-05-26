@@ -10,7 +10,10 @@ Thomas Miles - 626263
 Represents the behavior of tiles that are open for navigation
 */
 public class OpenLogicTile implements LogicTile {
-
+	
+	String name;
+	StateVector in, out;
+	
 	public OpenLogicTile(String name) {
 		// TODO Auto-generated constructor stub
 	}

@@ -63,11 +63,33 @@ public class Pathfinder implements PathfinderInterface {
 			findDestination(map, c, carV.pos, 0, new ArrayList<>());
 			if (best == 0) break;
 		}
+		enforce(tilePath, carV);
 
 		return tilePath.get(0).getOutVector();
 	}
 
+	/**
+	 * Couples in/out vectors between tiles then calls effect() on each to constrain direction of movement
+	 * @param path ArrayList of tiles (in order start-finish)
+	 * @param car StateVector of the car at this moment
+	 */
+	private void enforce(ArrayList<LogicTile> path, StateVector car) {
 
+		path.get(0).setInVector(car);
+		path.get(0).setOutVector(new StateVector());
+
+		// couple inVectors of later tiles to outVectors of earlier ones
+		for (int i=1; i<path.size(); i++) {
+			path.get(i).setInVector ( path.get(i-1).getOutVector() );
+			path.get(i).setOutVector(new StateVector());
+		}
+		// now with the fully coupled path, enforce all the tiles from end to start.
+		// NB: due to the pretty useless peek function, it is practically impossible to estimate weather turns are
+		// achievable, or how much mud slows you down, so effect assumes the move is doable
+		for (int i=path.size()-1; i >= 0; i--) {
+			path.get(i).effect();
+		}
+	}
 
 
 	/**

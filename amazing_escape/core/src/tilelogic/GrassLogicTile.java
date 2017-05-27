@@ -13,8 +13,8 @@ Generalizes the behavior of the GrassTrap
 */
 public class GrassLogicTile implements LogicTile {
 
-	StateVector inVector;
-	StateVector outVector;
+	private StateVector outVector, inVector;
+
 
 	@Override
 	public int getPriority() {

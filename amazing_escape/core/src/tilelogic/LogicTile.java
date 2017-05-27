@@ -19,7 +19,7 @@ public interface LogicTile {
 	int LAVA = -3;
 
 	int getPriority();
-	void effect(StateVector outVector);
+	void effect();
 	StateVector getInVector();
 	StateVector getOutVector();
 	void setInVector(StateVector vector);

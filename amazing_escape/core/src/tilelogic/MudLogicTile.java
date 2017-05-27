@@ -11,16 +11,36 @@ Generalizes the behavior of the MudTrap
 */
 public class MudLogicTile implements LogicTile{
 
+	private StateVector inVector, outVector; // george you screwed me so hard not having a generic LogicTile class
+
 	@Override
 	public int getPriority() {
-		// TODO Auto-generated method stub
-		return 0;
+		return MUD;
 	}
 
 	@Override
-	public StateVector move(float delta, Move move) {
-		// TODO Auto-generated method stub
-		return null;
+	public void effect(StateVector outVector) {
+// TODO; again, no way of knowing the slow down factor (aside from magic numbers, odds are not ok)
+	}
+
+	@Override
+	public StateVector getInVector() {
+		return inVector;
+	}
+
+	@Override
+	public StateVector getOutVector() {
+		return outVector;
+	}
+
+	@Override
+	public void setInVector(StateVector vector) {
+		inVector = vector;
+	}
+
+	@Override
+	public void setOutVector(StateVector vector) {
+		outVector = vector;
 	}
 
 }

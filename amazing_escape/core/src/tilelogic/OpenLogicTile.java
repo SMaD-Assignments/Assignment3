@@ -25,12 +25,9 @@ public class OpenLogicTile implements LogicTile {
 	}
 
 	@Override
-	public StateVector move(float delta, Move move) {
-		// TODO Auto-generated method stub
-		return null;
+	public void effect() {
+
 	}
-
-
 
 
 

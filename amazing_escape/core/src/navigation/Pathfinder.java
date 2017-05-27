@@ -3,12 +3,10 @@ package navigation;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import interpreters.CompositeTileInterpreter;
 import tilelogic.LogicTile;
 import tilelogic.StateVector;
 import utilities.Coordinate;
 import world.Car;
-import world.World;
 import world.WorldSpatial;
 
 /** SWEN30006 Software Modeling and Design
@@ -35,7 +33,8 @@ public class Pathfinder implements PathfinderInterface {
 	@Override
 	public Move findMove(HashMap<Coordinate, LogicTile> map, StateVector carV) {
 
-		ArrayList<LogicTile> tilePath = new ArrayList<>();
+		best = -Integer.MAX_VALUE;
+		ArrayList<Coordinate> edgeTiles;
 		Coordinate searchStart;
 		this.map.updateMap(map);
 		this.map.wallOff(carV);
@@ -56,12 +55,14 @@ public class Pathfinder implements PathfinderInterface {
 		} else {
 			searchStart = new Coordinate(carV.pos.x, carV.pos.y - Car.VIEW_SQUARE);
 		}
-		best = -Integer.MAX_VALUE;
+		edgeTiles = getEdgeTiles(map, searchStart);
 
-		// find the best route to take
+		// loop through the border of vision, if a clear path is returned (best == 0), break
+		for (Coordinate c : edgeTiles) {
 
-
-		findDestination(map, searchStart, carV.pos, 0, new ArrayList<>());
+			findDestination(map, c, carV.pos, 0, new ArrayList<>());
+			if (best == 0) break;
+		}
 
 		Move move = tilePath.get(0).move(carV);
 
@@ -71,6 +72,9 @@ public class Pathfinder implements PathfinderInterface {
 		return move;
 
 	}
+
+
+
 
 	/**
 	 * Recursive exploration function, updates best and tilePath to the best route found
@@ -159,10 +163,7 @@ public class Pathfinder implements PathfinderInterface {
 			leftMove = new Coordinate(look.x - 1, look.y);
 			findDestination(view, leftMove, car, score, currentPath);
 		}
-
-
-
-
+		return false;
 	}
 
 	/**
@@ -171,8 +172,125 @@ public class Pathfinder implements PathfinderInterface {
 	 * @return
 	 */
 	private Move specialMove(HashMap<Coordinate, LogicTile> map) {
-// TODO; do me
-
+// TODO; gahn... gahn get fucked t(-_-t)
+return null;
 	}
 
+
+
+
+	/**
+	 * Generates an ordered ArrayList of LogicTiles that are on the same edge as a given start coordinate.
+	 * @param view current view
+	 * @param start tile exploration is to begin from; must be a central tile
+	 * @return ArrayList ordered from 0 being first tile to explore
+	 */
+	private ArrayList<Coordinate> getEdgeTiles(HashMap<Coordinate, LogicTile> view, Coordinate start) {
+
+		// TODO I hate this method but cbf, also for some reason it thinks c2 is going to not get initialised or some
+		// TODO shit. fuck knows really
+
+		int j=0,i=1;
+		Coordinate c1 = null, c2 = null, c3 = null, c4 = null;
+
+		ArrayList<Coordinate> edgeTiles = new ArrayList<>();
+
+		edgeTiles.add(start);
+
+		// if view has exclusively one key in +/- x, increment through until the edge of the view
+		if (view.containsKey(new Coordinate(start.x + 1, start.y)) ^
+				view.containsKey(new Coordinate(start.x - 1, start.y))) {
+
+			// first go through the primary edge (containing start)
+			while (view.containsKey(c1 = new Coordinate(start.x, start.y + i)) &&
+					view.containsKey(c2 = new Coordinate(start.x, start.y - i))) {
+				edgeTiles.add(c1);
+				edgeTiles.add(c2);
+				i++;
+			}
+			i = 1;
+
+			// go through adjacent edges
+			// start edge was left
+			if (view.containsKey(new Coordinate(c1.x + i, c1.y))) {
+
+				while (view.containsKey(new Coordinate(c1.x + i, c1.y))) {
+					edgeTiles.add(c3 = new Coordinate(c1.x + i, c1.y));
+					edgeTiles.add(c4 = new Coordinate(c2.x + i, c2.y));
+					i++;
+				}
+				// start edge was right
+			} else {
+				while (view.containsKey(new Coordinate(c1.x - i, c1.y))) {
+					edgeTiles.add(c3 = new Coordinate(c1.x - i, c1.y));
+					edgeTiles.add(c4 = new Coordinate(c2.x - i, c2.y));
+					i++;
+				}
+			}
+			i = 1;
+			// close the loop
+			if (view.containsKey(new Coordinate(c3.x,c3.y + i))) {
+				while (c3.y + i != c4.y - i) {
+					edgeTiles.add (new Coordinate(c3.x, c3.y + i));
+					edgeTiles.add (new Coordinate(c4.x, c4.y - i));
+					i++;
+				}
+			} else {
+				while (c3.y + i != c4.y + i) {
+					edgeTiles.add (new Coordinate(c3.x, c3.y - i));
+					edgeTiles.add (new Coordinate(c4.x, c4.y + i));
+					i++;
+				}
+			}
+
+
+		} else if (view.containsKey(new Coordinate(start.x, start.y + 1)) ^
+				view.containsKey(new Coordinate(start.x, start.y - 1))) {
+
+			while (view.containsKey(c1 = new Coordinate(start.x + i, start.y)) &&
+					view.containsKey(c2 = new Coordinate(start.x - i, start.y))) {
+				edgeTiles.add(c1);
+				edgeTiles.add(c2);
+				i++;
+			}
+			i = 1;
+			// start edge was bottom
+			if (view.containsKey(new Coordinate(c1.x, c1.y + i))) {
+
+				while (view.containsKey(new Coordinate(c1.x, c1.y + i))) {
+					edgeTiles.add(new Coordinate(c1.x, c1.y +i ));
+					edgeTiles.add(new Coordinate(c2.x, c2.y +i ));
+					i++;
+				}
+				// start edge was top
+			} else {
+				while (view.containsKey(new Coordinate(c1.x, c1.y - i))) {
+					edgeTiles.add(new Coordinate(c1.x, c1.y - i));
+					edgeTiles.add(new Coordinate(c2.x, c2.y - i));
+					i++;
+				}
+			}
+			// close the loop
+			if (view.containsKey(new Coordinate(c3.x + i,c3.y))) {
+				while (c3.x + i != c4.x - i) {
+					edgeTiles.add (new Coordinate(c3.x + i, c3.y));
+					edgeTiles.add (new Coordinate(c4.x - i, c4.y));
+					i++;
+				}
+			} else {
+				while (c3.x - i != c4.x + i) {
+					edgeTiles.add (new Coordinate(c3.x - i, c3.y));
+					edgeTiles.add (new Coordinate(c4.x + i, c4.y));
+					i++;
+				}
+			}
+
+
+		} else {
+			System.out.println("ERROR: getEdgeTiles - start coordinate not an edge piece");
+			System.exit(1);
+		}
+
+		return edgeTiles;
+	}
 }

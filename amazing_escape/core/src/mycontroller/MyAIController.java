@@ -8,8 +8,9 @@ import navigation.Move;
 import navigation.Pathfinder;
 import navigation.PathfinderInterface;
 import tilelogic.LogicTile;
-import tilelogic.TileInterpreter;
-import tilelogic.TileInterpreterFactory;
+import interpreters.TileInterpreter;
+import interpreters.TileInterpreterFactory;
+import tilelogic.StateVector;
 import tiles.MapTile;
 import utilities.Coordinate;
 import world.Car;
@@ -25,7 +26,6 @@ public class MyAIController extends CarController{
 	private TileInterpreter interpreter;
 	private PathfinderInterface pathfinder;
 	
-	
 	public MyAIController(Car car) {
 		super(car);
 		interpreter = TileInterpreterFactory.getInstance().getFilledComposite();
@@ -34,11 +34,13 @@ public class MyAIController extends CarController{
 
 	@Override
 	public void update(float delta) {
+
+		StateVector carV = new StateVector(this.getPosition(), this.getHealth(), this.getAngle());
 		/* First use the interpreter to convert the map into a form the pathfinder can use */
 		HashMap<Coordinate, LogicTile> map = getProcessedMap();
 		
 		/* Then pass the interpreted map to the pathfinder to act on the car */
-		Move move = pathfinder.findMove(map);
+		Move move = pathfinder.findMove(map, carV);
 		
 		/* Then enact the move given */
 	}

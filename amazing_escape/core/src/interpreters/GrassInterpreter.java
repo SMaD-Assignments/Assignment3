@@ -1,8 +1,9 @@
-package tilelogic;
+package interpreters;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import tilelogic.GrassLogicTile;
 import tiles.GrassTrap;
 import utilities.Coordinate;
 

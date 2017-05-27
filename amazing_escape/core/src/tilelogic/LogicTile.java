@@ -11,6 +11,18 @@ Provides the general methods that allow for all traps to be generalised
 */
 public interface LogicTile {
 
-	public int getPriority();
-	public StateVector move(float delta, Move move);
+	// priority values for various instances of tiles
+	int OPEN = 0;
+	int WALL = -10;
+	int GRASS = -1;
+	int MUD = -2;
+	int LAVA = -3;
+
+	int getPriority();
+	Move move(StateVector position);
+	StateVector getInVector();
+	StateVector getOutVector();
+	void setInVector(StateVector vector);
+	void setOutVector(StateVector vector);
+
 }

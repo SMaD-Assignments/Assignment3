@@ -1,8 +1,10 @@
-package tilelogic;
+package interpreters;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import tilelogic.NullLogicTile;
+import tilelogic.OpenLogicTile;
 import tiles.MapTile;
 import utilities.Coordinate;
 

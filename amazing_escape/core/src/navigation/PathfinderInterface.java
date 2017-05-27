@@ -3,6 +3,7 @@ package navigation;
 import java.util.HashMap;
 
 import tilelogic.LogicTile;
+import tilelogic.StateVector;
 import utilities.Coordinate;
 
 /** SWEN30006 Software Modeling and Design
@@ -14,5 +15,5 @@ Thomas Miles - 626263
 Provides an interface to allow for different Pathfinders
 */
 public interface PathfinderInterface {
-	public Move findMove(HashMap<Coordinate, LogicTile> map);
+	public Move findMove(HashMap<Coordinate, LogicTile> map, StateVector carV);
 }

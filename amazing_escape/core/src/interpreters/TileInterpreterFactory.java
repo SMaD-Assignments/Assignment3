@@ -1,4 +1,4 @@
-package tilelogic;
+package interpreters;
 
 /** SWEN30006 Software Modeling and Design
 TileInterpreterFactory class

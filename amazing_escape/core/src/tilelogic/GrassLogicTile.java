@@ -24,4 +24,24 @@ public class GrassLogicTile implements LogicTile {
 		return null;
 	}
 
+	@Override
+	public StateVector getInVector() {
+		return null;
+	}
+
+	@Override
+	public StateVector getOutVector() {
+		return null;
+	}
+
+	@Override
+	public void setInVector(StateVector vector) {
+
+	}
+
+	@Override
+	public void setOutVector(StateVector vector) {
+
+	}
+
 }

@@ -11,6 +11,8 @@ Represents any tile that should not be entered. Walls, blocked paths etc.
 */
 public class NullLogicTile implements LogicTile{
 
+
+
 	@Override
 	public int getPriority() {
 		// TODO Auto-generated method stub
@@ -18,9 +20,27 @@ public class NullLogicTile implements LogicTile{
 	}
 
 	@Override
-	public StateVector move(float delta, Move move) {
-		// TODO Auto-generated method stub
+	public Move move(StateVector position) {
 		return null;
 	}
 
+	@Override
+	public StateVector getInVector() {
+		return null;
+	}
+
+	@Override
+	public StateVector getOutVector() {
+		return null;
+	}
+
+	@Override
+	public void setInVector(StateVector vector) {
+
+	}
+
+	@Override
+	public void setOutVector(StateVector vector) {
+
+	}
 }

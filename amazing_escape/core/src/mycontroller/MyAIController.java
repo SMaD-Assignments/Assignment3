@@ -39,12 +39,17 @@ public class MyAIController extends CarController{
 		/* First use the interpreter to convert the map into a form the pathfinder can use */
 		HashMap<Coordinate, LogicTile> map = getProcessedMap();
 		
-		/* Then pass the interpreted map to the pathfinder to act on the car */
-		Move move = pathfinder.findMove(map, carV);
-		
-		/* Then enact the move given */
+		/* Then pass the interpreted map to the pathfinder to find a path to take */
+		StateVector aim = pathfinder.findMove(map, carV);
+
+		move(aim);
 	}
-	
+	private boolean move(StateVector aim) {
+		//TODO use peek to evaluate an appropriate behavior to meet aim condition. if aim is unreachable,
+		//TODO should call specialMove to get a different aim (3. or reverse)
+		return false;
+	}
+
 	private HashMap<Coordinate, LogicTile> getProcessedMap() {
 		HashMap<Coordinate, MapTile> mapCM = getView();
 		HashMap<Coordinate, Object> mapCO = mapTileToObject(mapCM);

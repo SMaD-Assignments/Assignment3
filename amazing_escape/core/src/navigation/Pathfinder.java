@@ -31,7 +31,7 @@ public class Pathfinder implements PathfinderInterface {
 	}
 
 	@Override
-	public Move findMove(HashMap<Coordinate, LogicTile> map, StateVector carV) {
+	public StateVector findMove(HashMap<Coordinate, LogicTile> map, StateVector carV) {
 
 		best = -Integer.MAX_VALUE;
 		ArrayList<Coordinate> edgeTiles;
@@ -40,7 +40,7 @@ public class Pathfinder implements PathfinderInterface {
 		this.map.wallOff(carV);
 		// TODO does wallOff fix the currentView (map)?, im assuming it does for now
 
-
+		// TODO maybe a scanForFinish method?
 		/* Establish the tile on the forward facing edge to begin looking for possible tiles to aim for */
 
 		if (carV.angle < WorldSpatial.EAST_DEGREE_MIN + 45 || carV.angle >= WorldSpatial.EAST_DEGREE_MAX - 45) {
@@ -64,13 +64,7 @@ public class Pathfinder implements PathfinderInterface {
 			if (best == 0) break;
 		}
 
-		Move move = tilePath.get(0).move(carV);
-
-		if (move == null) {
-			return specialMove(map);
-		}
-		return move;
-
+		return tilePath.get(0).getOutVector();
 	}
 
 
@@ -171,7 +165,7 @@ public class Pathfinder implements PathfinderInterface {
 	 * @param map
 	 * @return
 	 */
-	private Move specialMove(HashMap<Coordinate, LogicTile> map) {
+	public StateVector specialMove(HashMap<Coordinate, LogicTile> map) {
 // TODO; gahn... gahn get fucked t(-_-t)
 return null;
 	}

@@ -15,5 +15,6 @@ Thomas Miles - 626263
 Provides an interface to allow for different Pathfinders
 */
 public interface PathfinderInterface {
-	public Move findMove(HashMap<Coordinate, LogicTile> map, StateVector carV);
+	public StateVector findMove(HashMap<Coordinate, LogicTile> map, StateVector carV);
+	StateVector specialMove(HashMap<Coordinate, LogicTile> map);
 }

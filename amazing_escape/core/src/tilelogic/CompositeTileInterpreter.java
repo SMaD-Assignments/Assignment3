@@ -30,7 +30,7 @@ public class CompositeTileInterpreter implements TileInterpreter {
 		for(TileInterpreter interpreter : interpreters) {
 			map = interpreter.ProcessMap(map);
 		}
-		return null;
+		return map;
 	}
 	
 	public void add(TileInterpreter interpreter) {

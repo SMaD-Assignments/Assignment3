@@ -41,15 +41,17 @@ public class MyAIController extends CarController{
 	public void update(float delta) {
 		this.delta = delta;
 		StateVector carV = new StateVector(this.getPosition(), this.getHealth(), this.getAngle());
+		System.out.println("GotStateVector");
 		/* First use the interpreter to convert the map into a form the pathfinder can use */
 		HashMap<Coordinate, LogicTile> map = getProcessedMap();
-		
+		System.out.println("GotMap");
 		/* Then pass the interpreted map to the pathfinder to find a path to take */
 		StateVector aim = pathfinder.findMove(map, carV);
-
+		System.out.println("GotMove");
 		if(!move(aim)) {
 			specialMove();
 		}
+		System.out.println("Applied Move");
 	}
 	
 	private boolean move(StateVector aim) {

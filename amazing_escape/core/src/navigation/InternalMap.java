@@ -34,7 +34,8 @@ public class InternalMap {
 	 */
 	public void updateMap(HashMap<Coordinate, LogicTile> mapSegment) {
 		for (Map.Entry<Coordinate, LogicTile> tile : mapSegment.entrySet()) {
-			if (map[tile.getKey().x][tile.getKey().y] == null) {
+			if (tile.getKey().x >= 0 && tile.getKey().y >= 0 && tile.getKey().x < World.MAP_WIDTH &&
+					tile.getKey().y < World.MAP_HEIGHT && map[tile.getKey().x][tile.getKey().y] == null) {
 				map[tile.getKey().x][tile.getKey().y] = tile.getValue();
 			}
 		}

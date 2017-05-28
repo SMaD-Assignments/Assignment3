@@ -14,7 +14,8 @@ to create the path for the car to follow
 */
 public class StateVector {
 	public static final int SENT = -1;	// sentinel value to represent an unconstrained vector
-
+	public static final float SLOW = 1, MEDIUM = 2, FAST = 3;
+	
 	public Coordinate pos;
 	public WorldSpatial.Direction face;
 	public int hp;
@@ -35,5 +36,14 @@ public class StateVector {
 		pos = new Coordinate(SENT,SENT);
 		angle = SENT;
 		hp = SENT;
+	}
+	
+	public float getVelocity() {
+		switch (speed) {
+		case SLOW: return SLOW;
+		case MEDIUM: return MEDIUM;
+		case FAST: return FAST;		
+		}
+		return 0;
 	}
 }

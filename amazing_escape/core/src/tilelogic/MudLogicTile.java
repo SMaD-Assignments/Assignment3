@@ -19,7 +19,10 @@ public class MudLogicTile implements LogicTile{
 	MudLogicTile (Coordinate pos) {
 		this.pos = pos;
 	}
-
+	@Override
+	public Coordinate getPosition() {
+		return pos;
+	}
 	@Override
 	public int getPriority() {
 		return MUD;

@@ -26,6 +26,11 @@ public class GrassLogicTile implements LogicTile {
 	}
 
 	@Override
+	public Coordinate getPosition() {
+		return pos;
+	}
+
+	@Override
 	public void effect(WorldSpatial.Direction in, WorldSpatial.Direction out) {
 
 

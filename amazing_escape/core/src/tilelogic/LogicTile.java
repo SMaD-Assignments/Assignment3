@@ -1,5 +1,6 @@
 package tilelogic;
 
+import utilities.Coordinate;
 import world.WorldSpatial;
 
 /** SWEN30006 Software Modeling and Design
@@ -20,6 +21,7 @@ public interface LogicTile {
 	int LAVA = -3;
 
 	int getPriority();
+	Coordinate getPosition();
 	void effect(WorldSpatial.Direction in, WorldSpatial.Direction out);
 	StateVector getInVector();
 	StateVector getOutVector();

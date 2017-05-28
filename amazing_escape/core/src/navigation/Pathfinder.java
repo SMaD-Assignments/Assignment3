@@ -84,14 +84,46 @@ public class Pathfinder implements PathfinderInterface {
 			path.get(i).setOutVector(new StateVector());
 		}
 		LogicTile last = path.get(path.size()-1);
-		last.getOutVector().
+		LogicTile secondLast = path.get(path.size()-2);
+
+
+		if (last.getPosition().x == secondLast.getPosition().x) {
+
+			if (last.getPosition().y < secondLast.getPosition().y) {
+				last.getOutVector().pos = new Coordinate(last.getPosition().x, last.getPosition().y - 1);
+			} else {
+				last.getOutVector().pos = new Coordinate(last.getPosition().x, last.getPosition().y + 1);
+			}
+		} else {
+			if (last.getPosition().x < secondLast.getPosition().x) {
+				last.getOutVector().pos = new Coordinate(last.getPosition().x - 1, last.getPosition().y);
+			} else {
+				last.getOutVector().pos = new Coordinate(last.getPosition().x + 1, last.getPosition().y);
+			}
+		}
 
 
 		// now with the fully coupled path, enforce all the tiles from end to start.
 		// NB: due to the pretty useless peek function, it is practically impossible to estimate weather turns are
 		// achievable, or how much mud slows you down, so effect assumes the move is doable
-		for (int i=path.size()-1; i >= 0; i--) {
-			path.get(i).effect();
+		for (int i=path.size()-1; i > 0; i--) {
+
+			if (path.get(i).getPosition().x == path.get(i-1).getPosition().x) {
+
+				if (path.get(i).getPosition().y < path.get(i-1).getPosition().y) {
+
+					path.get(i).effect(WorldSpatial.Direction.NORTH, path.get(i).getOutVector().face);
+				} else {
+					path.get(i).effect(WorldSpatial.Direction.SOUTH, path.get(i).getOutVector().face);
+				}
+			} else {
+				if (path.get(i).getPosition().x < path.get(i-1).getPosition().x) {
+
+					path.get(i).effect(WorldSpatial.Direction.EAST, path.get(i).getOutVector().face);
+				} else {
+					path.get(i).effect(WorldSpatial.Direction.WEST, path.get(i).getOutVector().face);
+				}
+			}
 		}
 	}
 

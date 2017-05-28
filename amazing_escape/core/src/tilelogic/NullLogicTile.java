@@ -1,5 +1,6 @@
 package tilelogic;
 
+import utilities.Coordinate;
 import world.WorldSpatial;
 
 /** SWEN30006 Software Modeling and Design
@@ -20,6 +21,11 @@ public class NullLogicTile implements LogicTile{
 	@Override
 	public int getPriority() {
 		return WALL;
+	}
+
+	@Override
+	public Coordinate getPosition() {
+		return null;
 	}
 
 	@Override

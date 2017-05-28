@@ -26,7 +26,10 @@ public class OpenLogicTile implements LogicTile {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
+	@Override
+	public Coordinate getPosition() {
+		return pos;
+	}
 	@Override
 	public void effect(WorldSpatial.Direction in, WorldSpatial.Direction out) {
 

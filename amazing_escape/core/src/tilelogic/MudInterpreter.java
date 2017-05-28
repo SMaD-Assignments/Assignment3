@@ -1,20 +1,19 @@
-package interpreters;
+package tilelogic;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import tilelogic.LavaLogicTile;
-import tiles.LavaTrap;
+import tiles.MudTrap;
 import utilities.Coordinate;
 /** SWEN30006 Software Modeling and Design
-LavaInterpreter class
+MudInterpreter class
 George Juliff - 624946
 David Murges - 657384
 Thomas Miles - 626263
 
-Converts the LavaTraps to LavaLogicTiles in the HashMap
+Converts the MudTraps in the HashMap to MudLogicTiles
 */
-public class LavaInterpreter implements TileInterpreter {
+public class MudInterpreter  implements TileInterpreter {
 
 	@Override
 	public int getPriority() {
@@ -25,8 +24,8 @@ public class LavaInterpreter implements TileInterpreter {
 	@Override
 	public HashMap<Coordinate, Object> ProcessMap(HashMap<Coordinate, Object> map) {
 		for (Map.Entry<Coordinate, Object> tile : map.entrySet()) {
-			if (tile.getValue() instanceof LavaTrap) {
-				map.replace(tile.getKey(), tile.getValue(), new LavaLogicTile());
+			if (tile.getValue() instanceof MudTrap) {
+				map.replace(tile.getKey(), tile.getValue(), new MudLogicTile());
 			}
 		}
 		return map;

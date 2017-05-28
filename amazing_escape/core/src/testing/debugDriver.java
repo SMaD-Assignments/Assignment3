@@ -3,8 +3,8 @@ package testing;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import interpreters.TileInterpreter;
-import interpreters.TileInterpreterFactory;
+import tilelogic.TileInterpreter;
+import tilelogic.TileInterpreterFactory;
 import world.Car;
 import world.World;
 

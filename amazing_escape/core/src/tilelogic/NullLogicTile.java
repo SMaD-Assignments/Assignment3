@@ -1,6 +1,5 @@
 package tilelogic;
 
-import navigation.Move;
 /** SWEN30006 Software Modeling and Design
 NullLogicTile class
 George Juliff - 624946
@@ -11,16 +10,49 @@ Represents any tile that should not be entered. Walls, blocked paths etc.
 */
 public class NullLogicTile implements LogicTile{
 
+	private StateVector inVector, outVector;
+	private int priority;
+
+	public NullLogicTile(int priority) {
+		this.priority = priority;
+	}
+
 	@Override
 	public int getPriority() {
-		// TODO Auto-generated method stub
-		return 0;
+		return priority;
 	}
 
 	@Override
-	public StateVector move(float delta, Move move) {
-		// TODO Auto-generated method stub
-		return null;
+	public void effect() {
+
 	}
 
+	@Override
+	public void effect(StateVector outVector) {
+		if (priority == WALL) {
+			inVector = null;
+			outVector = null;
+		}
+	}
+
+
+	@Override
+	public StateVector getInVector() {
+		return inVector;
+	}
+
+	@Override
+	public StateVector getOutVector() {
+		return outVector;
+	}
+
+	@Override
+	public void setInVector(StateVector vector) {
+		inVector = vector;
+	}
+
+	@Override
+	public void setOutVector(StateVector vector) {
+		outVector = vector;
+	}
 }

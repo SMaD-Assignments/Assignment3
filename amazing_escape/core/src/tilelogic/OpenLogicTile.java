@@ -11,8 +11,11 @@ Represents the behavior of tiles that are open for navigation
 */
 public class OpenLogicTile implements LogicTile {
 
-	public OpenLogicTile(String name) {
-		// TODO Auto-generated constructor stub
+	private StateVector inVector, outVector;
+
+
+	public OpenLogicTile() {
+
 	}
 
 	@Override
@@ -22,9 +25,32 @@ public class OpenLogicTile implements LogicTile {
 	}
 
 	@Override
-	public StateVector move(float delta, Move move) {
-		// TODO Auto-generated method stub
-		return null;
+	public void effect() {
+
 	}
 
+
+
+/* 	getters and setters
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+	@Override
+	public StateVector getInVector() {
+		return inVector;
+	}
+
+	@Override
+	public StateVector getOutVector() {
+		return outVector;
+	}
+
+	@Override
+	public void setInVector(StateVector vector) {
+		inVector = vector;
+	}
+
+	@Override
+	public void setOutVector(StateVector vector) {
+		outVector = vector;
+	}
 }

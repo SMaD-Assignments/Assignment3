@@ -8,11 +8,14 @@ import navigation.Move;
 import navigation.Pathfinder;
 import navigation.PathfinderInterface;
 import tilelogic.LogicTile;
-import tilelogic.TileInterpreter;
-import tilelogic.TileInterpreterFactory;
+import interpreters.TileInterpreter;
+import interpreters.TileInterpreterFactory;
+import tilelogic.StateVector;
 import tiles.MapTile;
 import utilities.Coordinate;
+import utilities.PeekTuple;
 import world.Car;
+import world.WorldSpatial;
 /** SWEN30006 Software Modeling and Design
 MyAIController class
 George Juliff - 624946
@@ -24,25 +27,67 @@ Provides a controller that ties the methods used to drive the car together
 public class MyAIController extends CarController{
 	private TileInterpreter interpreter;
 	private PathfinderInterface pathfinder;
-	
+	private float delta;
 	
 	public MyAIController(Car car) {
 		super(car);
 		interpreter = TileInterpreterFactory.getInstance().getFilledComposite();
 		pathfinder = new Pathfinder();
+		delta = 0.1f;
 	}
 
 	@Override
 	public void update(float delta) {
+		this.delta = delta;
+		StateVector carV = new StateVector(this.getPosition(), this.getHealth(), this.getAngle());
 		/* First use the interpreter to convert the map into a form the pathfinder can use */
 		HashMap<Coordinate, LogicTile> map = getProcessedMap();
 		
-		/* Then pass the interpreted map to the pathfinder to act on the car */
-		Move move = pathfinder.findMove(map);
-		
-		/* Then enact the move given */
+		/* Then pass the interpreted map to the pathfinder to find a path to take */
+		StateVector aim = pathfinder.findMove(map, carV);
+
+		move(aim);
 	}
 	
+	private boolean move(StateVector aim) {
+		float delta = this.delta;
+		Coordinate currentCor = new Coordinate(getPosition());
+		PeekTuple peek;
+		/* First find the next tile the car will land on */
+		while(true) {
+			peek = peek(getRawVelocity(), getAngle(), WorldSpatial.RelativeDirection.LEFT, delta);
+			if(!currentCor.equals(peek.getCoordinate())) {
+				break;
+			}
+			delta += this.delta;
+		}
+		/* Then check if the tile is the intended one */
+		if (!aim.pos.equals(peek.getCoordinate())) {
+			if (getTileTurn(currentCor, aim.pos, peek.getCoordinate()) == WorldSpatial.RelativeDirection.RIGHT) {
+				turnRight(this.delta);
+			} else {
+				turnLeft(this.delta);
+			}
+		} else {
+			/* If so match aim angle */
+			float dist = aim.angle - getAngle();
+			if(dist > 180 || (dist < 0 && dist > -180)) {
+				turnLeft(this.delta);
+			} else {
+				turnRight(this.delta);
+			}
+		}
+		
+		/* Match target velocity */
+		if (getVelocity() < aim.getVelocity()) {
+			applyForwardAcceleration();
+		} else {
+			applyReverseAcceleration();
+		}
+		
+		return false;
+	}
+
 	private HashMap<Coordinate, LogicTile> getProcessedMap() {
 		HashMap<Coordinate, MapTile> mapCM = getView();
 		HashMap<Coordinate, Object> mapCO = mapTileToObject(mapCM);
@@ -71,5 +116,51 @@ public class MyAIController extends CarController{
 		}
 		return newMap;
 	}
+	
+	private WorldSpatial.RelativeDirection getTileTurn(Coordinate car, Coordinate aim, Coordinate peek) {
+		int dist;
+		dist = findDirect(peek, car) - findDirect(aim, car);
+		if(dist > 4 || (dist < 0 && dist >-4)) {
+			return WorldSpatial.RelativeDirection.RIGHT;
+		}
+		if(dist < -4 || (dist < 4 && dist > 0)) {
+			return WorldSpatial.RelativeDirection.LEFT;
+		}
+		else {
+			/* For U turns always turn right for consistency */
+			return WorldSpatial.RelativeDirection.RIGHT;
+		}
+	}
+	
+	private int findDirect(Coordinate dest, Coordinate car) {
+		if(dest.x == car.x && dest.y == car.y+1) {
+			return 0;
+		}
+		if(dest.x == car.x+1 && dest.y == car.y+1) {
+			return 1;
+		}
+		if(dest.x == car.x+1 && dest.y == car.y) {
+			return 2;
+		}
+		if(dest.x == car.x+1 && dest.y == car.y-1) {
+			return 3;
+		}
+		if(dest.x == car.x && dest.y == car.y-1) {
+			return 4;
+		}
+		if(dest.x == car.x-1 && dest.y == car.y-1) {
+			return 5;
+		}
+		if(dest.x == car.x-1 && dest.y == car.y) {
+			return 6;
+		}
+		if(dest.x == car.x-1 && dest.y == car.y+1) {
+			return 7;
+		}
+		System.err.println("ERROR: bad Tiles found by move");
+		System.exit(-1);
+		return 0;
+	}
+
 
 }

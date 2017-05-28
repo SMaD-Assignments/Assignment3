@@ -1,6 +1,9 @@
 package tilelogic;
 
 import navigation.Move;
+import utilities.Coordinate;
+import world.WorldSpatial;
+
 /** SWEN30006 Software Modeling and Design
 OpenLogicTile class
 George Juliff - 624946
@@ -13,9 +16,10 @@ public class OpenLogicTile implements LogicTile {
 
 	private StateVector inVector, outVector;
 
+	private Coordinate pos;
 
-	public OpenLogicTile() {
-
+	OpenLogicTile (Coordinate pos) {
+		this.pos = pos;
 	}
 
 	@Override
@@ -25,7 +29,29 @@ public class OpenLogicTile implements LogicTile {
 	}
 
 	@Override
-	public void effect() {
+	public void effect(WorldSpatial.Direction in, WorldSpatial.Direction out) {
+
+		inVector.face = in;
+		outVector.face = out;
+		inVector.speed = outVector.speed; // go in at the same speed as required for out to give time to slow down
+		switch (out) {
+			case EAST:
+				inVector.pos = new Coordinate(outVector.pos.x - 1, outVector.pos.y);
+				break;
+			case WEST:
+				inVector.pos = new Coordinate(outVector.pos.x + 1, outVector.pos.y);
+				break;
+			case NORTH:
+				inVector.pos = new Coordinate(outVector.pos.x, outVector.pos.y - 1);
+				break;
+			case SOUTH:
+				inVector.pos = new Coordinate(outVector.pos.x, outVector.pos.y + 1);
+				break;
+			default:
+				inVector.pos = null;
+				System.out.println("ERROR: out uninitialized in effect() call");
+				System.exit(1);
+		}
 
 	}
 

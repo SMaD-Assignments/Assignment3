@@ -1,5 +1,7 @@
 package tilelogic;
 
+import world.WorldSpatial;
+
 /** SWEN30006 Software Modeling and Design
 NullLogicTile class
 George Juliff - 624946
@@ -11,29 +13,21 @@ Represents any tile that should not be entered. Walls, blocked paths etc.
 public class NullLogicTile implements LogicTile{
 
 	private StateVector inVector, outVector;
-	private int priority;
 
-	public NullLogicTile(int priority) {
-		this.priority = priority;
+	public NullLogicTile() {
 	}
 
 	@Override
 	public int getPriority() {
-		return priority;
+		return WALL;
 	}
 
 	@Override
-	public void effect() {
-
+	public void effect(WorldSpatial.Direction in, WorldSpatial.Direction out) {
+		System.out.println("ERROR: Trying to effect() a wall tile");
+		// this should never be called
 	}
 
-	@Override
-	public void effect(StateVector outVector) {
-		if (priority == WALL) {
-			inVector = null;
-			outVector = null;
-		}
-	}
 
 
 	@Override

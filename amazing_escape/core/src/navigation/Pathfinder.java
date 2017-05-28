@@ -83,6 +83,10 @@ public class Pathfinder implements PathfinderInterface {
 			path.get(i).setInVector ( path.get(i-1).getOutVector() );
 			path.get(i).setOutVector(new StateVector());
 		}
+		LogicTile last = path.get(path.size()-1);
+		last.getOutVector().
+
+
 		// now with the fully coupled path, enforce all the tiles from end to start.
 		// NB: due to the pretty useless peek function, it is practically impossible to estimate weather turns are
 		// achievable, or how much mud slows you down, so effect assumes the move is doable

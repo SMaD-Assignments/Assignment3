@@ -1,5 +1,6 @@
 package tilelogic;
 
+import tilelogic.StateVector.Speed;
 import utilities.Coordinate;
 import world.WorldSpatial;
 
@@ -36,6 +37,9 @@ public class OpenLogicTile implements LogicTile {
 		inVector.face = in;
 		outVector.face = out;
 		inVector.speed = outVector.speed; // go in at the same speed as required for out to give time to slow down
+		if (inVector.speed == null) {
+			inVector.speed = Speed.FAST;
+		}
 		switch (out) {
 			case EAST:
 				inVector.pos = new Coordinate(outVector.pos.x - 1, outVector.pos.y);

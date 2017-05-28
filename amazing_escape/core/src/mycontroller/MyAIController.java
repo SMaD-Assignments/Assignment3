@@ -3,6 +3,8 @@ package mycontroller;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.badlogic.gdx.math.Vector2;
+
 import controller.CarController;
 import navigation.Pathfinder;
 import navigation.PathfinderInterface;
@@ -41,36 +43,51 @@ public class MyAIController extends CarController{
 	public void update(float delta) {
 		this.delta = delta;
 		StateVector carV = new StateVector(this.getPosition(), this.getHealth(), this.getAngle());
-		System.out.println("GotStateVector");
+	//	System.out.println("GotStateVector");
 		/* First use the interpreter to convert the map into a form the pathfinder can use */
 		HashMap<Coordinate, LogicTile> map = getProcessedMap();
-		System.out.println("GotMap");
+	//	System.out.println("GotMap");
 		/* Then pass the interpreted map to the pathfinder to find a path to take */
 		StateVector aim = pathfinder.findMove(map, carV);
-		System.out.println("GotMove");
+	//	System.out.println("GotMove");
 		if(!move(aim)) {
 			specialMove();
 		}
-		System.out.println("Applied Move");
+	//	System.out.println("Applied Move");
 	}
 	
 	private boolean move(StateVector aim) {
 		float delta = this.delta;
 		Coordinate currentCor = new Coordinate(getPosition());
-		PeekTuple peek;
+		Coordinate nextCor = currentCor;
+		applyForwardAcceleration();
+		
+		
+	//	System.out.println(aim.pos.x + ","+aim.pos.y +", "+ aim.face+ ". " + aim.speed);
 		/* First find the next tile the car will land on */
-		while(true) {
-			peek = peek(getRawVelocity(), getAngle(), WorldSpatial.RelativeDirection.LEFT, delta);
+		/*while(true) {
+			peek = peek(new Vector2((float)Math.cos(getAngle()), (float)Math.sin(getAngle())), getAngle() + 20, WorldSpatial.RelativeDirection.LEFT, delta);
+			
 			if(!currentCor.equals(peek.getCoordinate())) {
 				break;
 			}
 			delta += this.delta;
+		}*/
+		switch (getOrientation()) {
+		case EAST: nextCor = new Coordinate(currentCor.x+1, currentCor.y);
+			break;
+		case NORTH: nextCor = new Coordinate(currentCor.x, currentCor.y+1);
+			break;
+		case SOUTH: nextCor = new Coordinate(currentCor.x-1, currentCor.y);
+			break;
+		case WEST: nextCor = new Coordinate(currentCor.x, currentCor.y+1);
+			break;
 		}
 		/* Then check if the tile is the intended one */
-		if (!aim.pos.equals(peek.getCoordinate())) {
-			if (getTileTurn(currentCor, aim.pos, peek.getCoordinate()) == WorldSpatial.RelativeDirection.RIGHT) {
+		if (!aim.pos.equals(nextCor)) {
+			if (getTileTurn(currentCor, aim.pos, nextCor) == WorldSpatial.RelativeDirection.RIGHT) {
 				turnRight(this.delta);
-			} else if (getTileTurn(currentCor, aim.pos, peek.getCoordinate()) == WorldSpatial.RelativeDirection.LEFT) {
+			} else if (getTileTurn(currentCor, aim.pos, nextCor) == WorldSpatial.RelativeDirection.LEFT) {
 				turnLeft(this.delta);
 			} else {
 				return false;
@@ -161,6 +178,7 @@ public class MyAIController extends CarController{
 	}
 	
 	private int findDirect(Coordinate dest, Coordinate car) {
+		System.out.println(dest.x + "," +car.x+"     "+dest.y+","+car.y);
 		if(dest.x == car.x && dest.y == car.y+1) {
 			return 0;
 		}
@@ -186,7 +204,7 @@ public class MyAIController extends CarController{
 			return 7;
 		}
 		System.err.println("ERROR: bad Tiles found by move");
-		System.exit(-1);
+		//System.exit(-1);
 		return 0;
 	}
 

@@ -4,12 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import controller.CarController;
-import navigation.Move;
 import navigation.Pathfinder;
 import navigation.PathfinderInterface;
 import tilelogic.LogicTile;
-import interpreters.TileInterpreter;
-import interpreters.TileInterpreterFactory;
+import tilelogic.TileInterpreter;
+import tilelogic.TileInterpreterFactory;
 import tilelogic.StateVector;
 import tiles.MapTile;
 import utilities.Coordinate;

@@ -1,4 +1,4 @@
-package interpreters;
+package tilelogic;
 
 import java.util.ArrayList;
 import java.util.HashMap;

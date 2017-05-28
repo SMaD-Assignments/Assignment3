@@ -33,6 +33,8 @@ public class Pathfinder implements PathfinderInterface {
 	@Override
 	public StateVector findMove(HashMap<Coordinate, LogicTile> map, StateVector carV) {
 
+
+
 		best = -Integer.MAX_VALUE;
 		ArrayList<Coordinate> edgeTiles;
 		Coordinate searchStart;

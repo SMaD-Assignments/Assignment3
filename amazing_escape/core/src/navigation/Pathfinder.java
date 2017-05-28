@@ -32,14 +32,14 @@ public class Pathfinder implements PathfinderInterface {
 
 	@Override
 	public StateVector findMove(HashMap<Coordinate, LogicTile> map, StateVector carV) {
-
-
-
+		System.out.println("Start: findmove");
 		best = -Integer.MAX_VALUE;
 		ArrayList<Coordinate> edgeTiles;
 		Coordinate searchStart;
 		this.map.updateMap(map);
+		System.out.println("Pushed map");
 		map = this.map.wallOff(carV);
+		System.out.println("Updated Map");
 		// TODO does wallOff fix the currentView (map)?, im assuming it does for now
 
 		// TODO maybe a scanForFinish method?
@@ -57,16 +57,18 @@ public class Pathfinder implements PathfinderInterface {
 		} else {
 			searchStart = new Coordinate(carV.pos.x, carV.pos.y - Car.VIEW_SQUARE);
 		}
+		System.out.println("Got Search start");
 		edgeTiles = getEdgeTiles(map, searchStart);
-
+		System.out.println("Got edgeTiles");
 		// loop through the border of vision, if a clear path is returned (best == 0), break
 		for (Coordinate c : edgeTiles) {
 
 			findDestination(map, c, carV.pos, 0, new ArrayList<>());
 			if (best == 0) break;
 		}
+		System.out.println("Got bestmove");
 		enforce(tilePath, carV);
-
+		System.out.println("End: findmove");
 		return tilePath.get(0).getOutVector();
 	}
 
@@ -283,6 +285,7 @@ return null;
 			}
 			i = 1;
 			// close the loop
+			System.out.println("c3x: " + c3.x);
 			if (view.containsKey(new Coordinate(c3.x,c3.y + i))) {
 				while (c3.y + i != c4.y - i) {
 					edgeTiles.add (new Coordinate(c3.x, c3.y + i));

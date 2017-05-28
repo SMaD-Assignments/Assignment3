@@ -81,9 +81,9 @@ public class InternalMap {
 						canWall = true;
 						break;
 					}
+					checked[wallX][yDown] = TO_WALL;
+					yDown--;
 				}
-				checked[wallX][yDown] = TO_WALL;
-				yDown--;
 			}
 			/* Check if the wall forms a closed shape */
 			if (canWall) {
@@ -102,7 +102,6 @@ public class InternalMap {
 					}
 				}
 			}
-			
 			/* If the wall forms a closed shape replace enclosed area with 2 */
 			if (canWall) {
 				fillAndWall(checked, carPos);

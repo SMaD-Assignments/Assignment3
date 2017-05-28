@@ -57,18 +57,18 @@ public class Pathfinder implements PathfinderInterface {
 		} else {
 			searchStart = new Coordinate(carV.pos.x, carV.pos.y - Car.VIEW_SQUARE);
 		}
-		System.out.println("Got Search start");
+//		System.out.println("Got Search start");
 		edgeTiles = getEdgeTiles(map, searchStart);
-		System.out.println("Got edgeTiles");
+//		System.out.println("Got edgeTiles");
 		// loop through the border of vision, if a clear path is returned (best == 0), break
 		for (Coordinate c : edgeTiles) {
 
 			findDestination(map, c, carV.pos, 0, new ArrayList<>());
 			if (best == 0) break;
 		}
-		System.out.println("Got bestmove");
+
 		enforce(tilePath, carV);
-		System.out.println("End: findmove");
+//		System.out.println("Got bestmove");
 		return tilePath.get(0).getOutVector();
 	}
 
@@ -91,18 +91,24 @@ public class Pathfinder implements PathfinderInterface {
 		LogicTile secondLast = path.get(path.size()-2);
 
 
-		if (last.getPosition().x == secondLast.getPosition().x) {
+		if (last.getPosition().x == secondLast.getPosition().x) { 
 
-			if (last.getPosition().y < secondLast.getPosition().y) {
+			if (last.getPosition().y > secondLast.getPosition().y) {
 				last.getOutVector().pos = new Coordinate(last.getPosition().x, last.getPosition().y - 1);
+				last.getOutVector().face = WorldSpatial.Direction.SOUTH;
+				
 			} else {
 				last.getOutVector().pos = new Coordinate(last.getPosition().x, last.getPosition().y + 1);
+				last.getOutVector().face = WorldSpatial.Direction.NORTH;
 			}
 		} else {
-			if (last.getPosition().x < secondLast.getPosition().x) {
+			if (last.getPosition().x > secondLast.getPosition().x) {
 				last.getOutVector().pos = new Coordinate(last.getPosition().x - 1, last.getPosition().y);
+				last.getOutVector().face = WorldSpatial.Direction.WEST;
+				
 			} else {
 				last.getOutVector().pos = new Coordinate(last.getPosition().x + 1, last.getPosition().y);
+				last.getOutVector().face = WorldSpatial.Direction.EAST;
 			}
 		}
 
@@ -114,14 +120,14 @@ public class Pathfinder implements PathfinderInterface {
 
 			if (path.get(i).getPosition().x == path.get(i-1).getPosition().x) {
 
-				if (path.get(i).getPosition().y < path.get(i-1).getPosition().y) {
+				if (path.get(i).getPosition().y > path.get(i-1).getPosition().y) {
 
 					path.get(i).effect(WorldSpatial.Direction.NORTH, path.get(i).getOutVector().face);
 				} else {
 					path.get(i).effect(WorldSpatial.Direction.SOUTH, path.get(i).getOutVector().face);
 				}
 			} else {
-				if (path.get(i).getPosition().x < path.get(i-1).getPosition().x) {
+				if (path.get(i).getPosition().x > path.get(i-1).getPosition().x) {
 
 					path.get(i).effect(WorldSpatial.Direction.EAST, path.get(i).getOutVector().face);
 				} else {
@@ -150,7 +156,11 @@ public class Pathfinder implements PathfinderInterface {
 		Coordinate downMove = null;
 		Coordinate upMove = null;
 
+		if (!view.containsKey(look)) return false;
+		
 		currentPath.add(0, view.get(look));
+		
+		
 		score = pathScore + view.get(look).getPriority();
 
 		/* break conditions */
@@ -162,45 +172,48 @@ public class Pathfinder implements PathfinderInterface {
 		if (view.get(look).getPriority() == LogicTile.WALL) return false;
 
 		// if we have found a complete path that goes through no traps, we won't keep looking in any subsequent calls
-		if (tilePath != null && tilePath.get(0).equals(car) && best == 0) return true;
+		if (tilePath.size() != 0 && tilePath.get(0).equals(car) && best == 0) return true;
 
 		// if the score resulting from going to this tile is worse than best, no point going on
 		if (score < best) return false;
 
 		// if we reach the car and have a better score than previously found, adjust tilePath and best and return
-		if (currentPath.get(0).equals(car) && score > best) {
+		if (currentPath.get(0).getPosition().equals(car) && score > best) {
 			tilePath = currentPath;
 			best = score;
+	/*		System.out.println("path is:");
+			for(LogicTile tile : tilePath) {
+				System.out.println(tile.getPosition().x + ", "+tile.getPosition().y);
+			} */
 			return true;
-		}
-
+			
+		} 
 		/* Recursion */
 
 		// look in the direction that get's closer to the car first, since no more recursion will occur if a clear route
 		// is found, by looking through closer tiles first, the shortest clear path will be found (if it exists)
 
-		if (Math.abs(car.x - look.x) < Math.abs(car.y - look.y)) {
+		if (Math.abs(car.x - look.x) > Math.abs(car.y - look.y)) {
 			// if x difference is negative, look to the left, otherwise look right
-			if (car.x - look.x < 0)  {
+			if (car.x < look.x)  {
 				leftMove = new Coordinate(look.x - 1, look.y);
-				findDestination(view, leftMove, car, score, currentPath);
+				if (findDestination(view, leftMove, car, score, currentPath)) return true;
 
 			} else {
 				rightMove = new Coordinate(look.x + 1, look.y);
-				findDestination(view, rightMove, car, score, currentPath);
+				if (findDestination(view, rightMove, car, score, currentPath)) return true;
 			}
-		} else if (Math.abs(car.x - look.x) > Math.abs(car.y - look.y)) {
+		} else if (Math.abs(car.x - look.x) < Math.abs(car.y - look.y)) {
 			// if y difference is negative, look to the down, otherwise look up
 			if (car.y - look.y < 0)  {
 				downMove = new Coordinate(look.x, look.y - 1);
-				findDestination(view, downMove, car, score, currentPath);
+				if (findDestination(view, downMove, car, score, currentPath)) return true;
 
 			} else {
 				upMove = new Coordinate(look.x, look.y + 1);
-				findDestination(view, upMove, car, score, currentPath);
+				if (findDestination(view, upMove, car, score, currentPath)) return true;
 			}
 		}
-
 		// look though every other direction
 
 		if (upMove == null) {
@@ -255,11 +268,13 @@ return null;
 
 		// if view has exclusively one key in +/- x, increment through until the edge of the view
 		if (view.containsKey(new Coordinate(start.x + 1, start.y)) ^
-				view.containsKey(new Coordinate(start.x - 1, start.y))) {
+			view.containsKey(new Coordinate(start.x - 1, start.y))) {
 
 			// first go through the primary edge (containing start)
-			while (view.containsKey(c1 = new Coordinate(start.x, start.y + i)) &&
-					view.containsKey(c2 = new Coordinate(start.x, start.y - i))) {
+			while (view.containsKey(new Coordinate(start.x, start.y + i)) &&
+					view.containsKey(new Coordinate(start.x, start.y - i))) {
+				c1 = new Coordinate(start.x, start.y + i);
+				c2 = new Coordinate(start.x, start.y - i);
 				edgeTiles.add(c1);
 				edgeTiles.add(c2);
 				i++;
@@ -270,6 +285,7 @@ return null;
 			// start edge was left
 			if (view.containsKey(new Coordinate(c1.x + i, c1.y))) {
 
+
 				while (view.containsKey(new Coordinate(c1.x + i, c1.y))) {
 					edgeTiles.add(c3 = new Coordinate(c1.x + i, c1.y));
 					edgeTiles.add(c4 = new Coordinate(c2.x + i, c2.y));
@@ -277,26 +293,33 @@ return null;
 				}
 				// start edge was right
 			} else {
+
 				while (view.containsKey(new Coordinate(c1.x - i, c1.y))) {
 					edgeTiles.add(c3 = new Coordinate(c1.x - i, c1.y));
 					edgeTiles.add(c4 = new Coordinate(c2.x - i, c2.y));
 					i++;
 				}
 			}
+			
+			
 			i = 1;
 			// close the loop
-			System.out.println("c3x: " + c3.x);
+			// c3 is the smaller
 			if (view.containsKey(new Coordinate(c3.x,c3.y + i))) {
-				while (c3.y + i != c4.y - i) {
+				while (c3.y < c4.y) {
+					System.out.println("c3y: " + c3.y + "c4y: "+c4.y);
 					edgeTiles.add (new Coordinate(c3.x, c3.y + i));
 					edgeTiles.add (new Coordinate(c4.x, c4.y - i));
 					i++;
+					if (c3.y + i != c4.y - i) break;
 				}
+			// c4 is smaller
 			} else {
-				while (c3.y + i != c4.y + i) {
+				while (c4.y < c3.y) {
 					edgeTiles.add (new Coordinate(c3.x, c3.y - i));
 					edgeTiles.add (new Coordinate(c4.x, c4.y + i));
 					i++;
+					if (c3.y - i != c4.y + i) break;
 				}
 			}
 
@@ -304,8 +327,11 @@ return null;
 		} else if (view.containsKey(new Coordinate(start.x, start.y + 1)) ^
 				view.containsKey(new Coordinate(start.x, start.y - 1))) {
 
-			while (view.containsKey(c1 = new Coordinate(start.x + i, start.y)) &&
-					view.containsKey(c2 = new Coordinate(start.x - i, start.y))) {
+			while (view.containsKey(new Coordinate(start.x + i, start.y)) &&
+					view.containsKey(new Coordinate(start.x - i, start.y))) {
+				
+				c1 = new Coordinate(start.x + i, start.y);
+				c2 = new Coordinate(start.x - i, start.y);
 				edgeTiles.add(c1);
 				edgeTiles.add(c2);
 				i++;
@@ -315,30 +341,36 @@ return null;
 			if (view.containsKey(new Coordinate(c1.x, c1.y + i))) {
 
 				while (view.containsKey(new Coordinate(c1.x, c1.y + i))) {
-					edgeTiles.add(new Coordinate(c1.x, c1.y +i ));
-					edgeTiles.add(new Coordinate(c2.x, c2.y +i ));
+					edgeTiles.add(c3 = new Coordinate(c1.x, c1.y +i ));
+					edgeTiles.add(c4 = new Coordinate(c2.x, c2.y +i ));
 					i++;
 				}
 				// start edge was top
 			} else {
 				while (view.containsKey(new Coordinate(c1.x, c1.y - i))) {
-					edgeTiles.add(new Coordinate(c1.x, c1.y - i));
-					edgeTiles.add(new Coordinate(c2.x, c2.y - i));
+					edgeTiles.add(c3 = new Coordinate(c1.x, c1.y - i));
+					edgeTiles.add(c4 = new Coordinate(c2.x, c2.y - i));
 					i++;
 				}
 			}
+			
 			// close the loop
 			if (view.containsKey(new Coordinate(c3.x + i,c3.y))) {
-				while (c3.x + i != c4.x - i) {
+				
+				// c3 is smaller
+				while (c3.x < c4.x) {
 					edgeTiles.add (new Coordinate(c3.x + i, c3.y));
 					edgeTiles.add (new Coordinate(c4.x - i, c4.y));
 					i++;
+					if (c3.x + i != c4.x - i) break;
 				}
+			// c4 is smaller	
 			} else {
-				while (c3.x - i != c4.x + i) {
+				while (c4.x < c3.x) {
 					edgeTiles.add (new Coordinate(c3.x - i, c3.y));
 					edgeTiles.add (new Coordinate(c4.x + i, c4.y));
 					i++;
+					if (c3.x - i != c4.x + i) break;
 				}
 			}
 
@@ -347,7 +379,7 @@ return null;
 			System.out.println("ERROR: getEdgeTiles - start coordinate not an edge piece");
 			System.exit(1);
 		}
-
+		
 		return edgeTiles;
 	}
 }

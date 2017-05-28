@@ -2,6 +2,7 @@ package tilelogic;
 
 import mycontroller.MyAIController;
 import navigation.Move;
+import world.WorldSpatial;
 
 /** SWEN30006 Software Modeling and Design
 GrassLogicTile class
@@ -22,13 +23,88 @@ public class GrassLogicTile implements LogicTile {
 	}
 
 	@Override
-	public void effect(StateVector outVector) {
+	public void effect(WorldSpatial.Direction in, WorldSpatial.Direction out) {
+		inVector.face = in;
+		outVector.face = out;
 
-		if (inVector == null) inVector = new StateVector(null, outVector.hp, outVector.angle);
-		else inVector.angle = outVector.angle;
+
+		//
+		if (in == WorldSpatial.Direction.EAST ^ out == WorldSpatial.Direction.WEST ||
+				in == WorldSpatial.Direction.SOUTH ^ out == WorldSpatial.Direction.NORTH) {
+
+			inVector.speed = StateVector.Speed.SLOW;
+		}
+
+		if (outVector.angle != StateVector.SENT)  {
+			inVector.angle = outVector.angle;
+
+		} else {
+
+			if (in == WorldSpatial.Direction.EAST) {
+
+				if (out == WorldSpatial.Direction.WEST) {
+					inVector.angle = WorldSpatial.EAST_DEGREE_MIN;
+					outVector.angle = WorldSpatial.EAST_DEGREE_MIN;
+
+				} else if (out == WorldSpatial.Direction.NORTH) {
+					inVector.angle = WorldSpatial.EAST_DEGREE_MIN + 45;
+					outVector.angle = WorldSpatial.EAST_DEGREE_MIN + 45;
+
+
+				} else if (out == WorldSpatial.Direction.SOUTH) {
+					inVector.angle = WorldSpatial.EAST_DEGREE_MAX - 45;
+					outVector.angle = WorldSpatial.EAST_DEGREE_MAX - 45;
+				}
+
+			} else if (in == WorldSpatial.Direction.WEST) {
+
+				if (out == WorldSpatial.Direction.EAST) {
+					inVector.angle = WorldSpatial.WEST_DEGREE;
+					outVector.angle = WorldSpatial.WEST_DEGREE;
+
+				} else if (out == WorldSpatial.Direction.NORTH) {
+					inVector.angle = WorldSpatial.WEST_DEGREE - 45;
+					outVector.angle = WorldSpatial.WEST_DEGREE - 45;
+
+
+				} else if (out == WorldSpatial.Direction.SOUTH) {
+					inVector.angle = WorldSpatial.WEST_DEGREE + 45;
+					outVector.angle = WorldSpatial.WEST_DEGREE + 45;
+				}
+
+			} else if (in == WorldSpatial.Direction.SOUTH) {
+
+				if (out == WorldSpatial.Direction.NORTH) {
+					inVector.angle = WorldSpatial.SOUTH_DEGREE;
+					outVector.angle = WorldSpatial.SOUTH_DEGREE;
+
+				} else if (out == WorldSpatial.Direction.WEST) {
+					inVector.angle = WorldSpatial.SOUTH_DEGREE - 45;
+					outVector.angle = WorldSpatial.SOUTH_DEGREE - 45;
+
+				} else if (out == WorldSpatial.Direction.EAST) {
+					inVector.angle = WorldSpatial.SOUTH_DEGREE + 45;
+					outVector.angle = WorldSpatial.SOUTH_DEGREE + 45;
+				}
+
+			} else if (in == WorldSpatial.Direction.NORTH) {
+
+				if (out == WorldSpatial.Direction.SOUTH) {
+					inVector.angle = WorldSpatial.NORTH_DEGREE;
+					outVector.angle = WorldSpatial.NORTH_DEGREE;
+
+				} else if (out == WorldSpatial.Direction.WEST) {
+					inVector.angle = WorldSpatial.NORTH_DEGREE + 45;
+					outVector.angle = WorldSpatial.NORTH_DEGREE + 45;
+
+				} else if (out == WorldSpatial.Direction.EAST) {
+					inVector.angle = WorldSpatial.NORTH_DEGREE - 45;
+					outVector.angle = WorldSpatial.NORTH_DEGREE - 45;
+				}
+			}
+		}
+
 	}
-
-
 
 
 	@Override

@@ -3,7 +3,6 @@ package interpreters;
 import java.util.HashMap;
 import java.util.Map;
 
-import tilelogic.LogicTile;
 import tilelogic.NullLogicTile;
 import tilelogic.OpenLogicTile;
 import tiles.MapTile;
@@ -35,7 +34,7 @@ public class BasicInterpreter  implements TileInterpreter {
 		for (Map.Entry<Coordinate, Object> tile : map.entrySet()) {
 			if (tile.getValue() instanceof MapTile) {
 				if (((MapTile)tile.getValue()).getName() == "Wall") {
-					map.replace(tile.getKey(), tile.getValue(), new NullLogicTile(LogicTile.WALL));
+					map.replace(tile.getKey(), tile.getValue(), new NullLogicTile());
 				}
 				else {
 					// Name is used to recognize end tiles, etc.

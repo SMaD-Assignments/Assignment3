@@ -20,6 +20,11 @@ Records a history of previously and currently visible tiles
 public class InternalMap {
 	private LogicTile[][] map;
 	
+	public static final int MIN_PASSAGE_WIDTH = 2;
+	public static final int EXPLORED = 1;
+	public static final int TO_WALL = 2;
+	public static final int EXPLORED_JOIN = 1;
+	
 	public InternalMap() {
 		map = new LogicTile[World.MAP_WIDTH][World.MAP_HEIGHT];
 	}
@@ -59,7 +64,7 @@ public class InternalMap {
 					canWall = true;
 					break;
 				}
-				checked[wallX][yUp] = 2;
+				checked[wallX][yUp] = TO_WALL;
 				yUp++;
 			}
 			/* Check for a wall below */
@@ -71,27 +76,82 @@ public class InternalMap {
 						break;
 					}
 				}
-				checked[wallX][yDown] = 2;
+				checked[wallX][yDown] = TO_WALL;
 				yDown--;
 			}
-			/* Check if the wall forms a closed shap */
+			/* Check if the wall forms a closed shape */
 			if (canWall) {
 				canWall = closedCheck(wallX, yUp, wallX, yDown, checked);
+			}
+			/* Check that creating this wall will not block any passages */
+			if (canWall) {
+				int y, i, x;
+				for (i = MIN_PASSAGE_WIDTH; i >= 0; i--) {
+					for (y = yDown; y <= yUp; y++) {
+						x = wallX -i*wallH;
+						if(x > 0 && x < World.MAP_WIDTH && map[x][y] instanceof NullLogicTile && !(joinedCheck(x,y,checked))){
+							canWall = false;
+							break;
+						}
+					}
+				}
 			}
 			
 			/* If the wall forms a closed shape replace enclosed area with 2 */
 			if (canWall) {
-				fillTwos(checked);
-				/* And if the car is not enclosed wall off the area */
-				if (checked[carPos.pos.x][carPos.pos.y] != 2) {
-					for (int x = 0; x < World.MAP_WIDTH; x++) {
-						for (int y = 0; y < World.MAP_HEIGHT; y++) {
-							if(checked[x][y] == 2) {
-								map[x][y] = new NullLogicTile();
-							}
+				fillAndWall(checked, carPos);
+			}
+			
+			
+		}
+		
+		if (wallV != 0) {
+			int wallY = carPos.pos.y + wallV;
+			int xUp, xDown, checked[][] = new int[World.MAP_WIDTH][World.MAP_HEIGHT];
+			xUp = xDown = carPos.pos.x;
+			boolean canWall = false;
+			/* Check if there is a wall above to wall from */
+			while (xUp < World.MAP_WIDTH && map[wallY][xUp] != null) {
+				if (map[wallY][xUp] instanceof NullLogicTile) {
+					canWall = true;
+					break;
+				}
+				checked[wallY][xUp] = TO_WALL;
+				xUp++;
+			}
+			/* Check for a wall below */
+			if (canWall) {
+				canWall = false;
+				while (xDown > 0 && map[wallY][xDown] != null) {
+					if (map[wallY][xDown] instanceof NullLogicTile) {
+						canWall = true;
+						break;
+					}
+				}
+				checked[wallY][xDown] = TO_WALL;
+				xDown--;
+			}
+			/* Check if the wall forms a closed shape */
+			if (canWall) {
+				canWall = closedCheck(wallY, xUp, wallY, xDown, checked);
+			}
+			/* Check that creating this wall will not block any passages */
+			if (canWall) {
+				int y, i, x;
+				for (i = MIN_PASSAGE_WIDTH; i >= 0; i--) {
+					for (x = xDown; x <= xUp; x++) {
+						y = wallY -i*wallV;
+						if(y > 0 && y < World.MAP_WIDTH && map[x][y] instanceof NullLogicTile && !(joinedCheck(x,y,checked))){
+							canWall = false;
+							break;
 						}
 					}
 				}
+			}
+			
+			/* If the wall forms a closed shape replace enclosed area with 2 and replace 2 with wall on map*/
+			if (canWall) {
+				fillAndWall(checked, carPos);
 			}
 			
 			
@@ -103,21 +163,41 @@ public class InternalMap {
 			return false;
 		}
 		if (x == xDest && y == yDest) {
-			checked[x][y] = 2;
+			checked[x][y] = TO_WALL;
 			return true;
 		}
-		checked[x][y] = 1;
-		if (closedCheck(x-1, y, xDest, yDest, checked)) {checked[x][y] = 2; return true;}
-		if (closedCheck(x, y-1, xDest, yDest, checked)) {checked[x][y] = 2; return true;}
-		if (closedCheck(x+1, y, xDest, yDest, checked)) {checked[x][y] = 2; return true;}
-		if (closedCheck(x, y+1, xDest, yDest, checked)) {checked[x][y] = 2; return true;}
-		if (closedCheck(x-1, y-1, xDest, yDest, checked)) {checked[x][y] = 2; return true;}
-		if (closedCheck(x+1, y-1, xDest, yDest, checked)) {checked[x][y] = 2; return true;}
-		if (closedCheck(x-1, y+1, xDest, yDest, checked)) {checked[x][y] = 2; return true;}
-		if (closedCheck(x+1, y+1, xDest, yDest, checked)) {checked[x][y] = 2; return true;}
+		checked[x][y] = EXPLORED;
+		if (closedCheck(x-1, y, xDest, yDest, checked)) {checked[x][y] = TO_WALL; return true;}
+		if (closedCheck(x, y-1, xDest, yDest, checked)) {checked[x][y] = TO_WALL; return true;}
+		if (closedCheck(x+1, y, xDest, yDest, checked)) {checked[x][y] = TO_WALL; return true;}
+		if (closedCheck(x, y+1, xDest, yDest, checked)) {checked[x][y] = TO_WALL; return true;}
+		if (closedCheck(x-1, y-1, xDest, yDest, checked)) {checked[x][y] = TO_WALL; return true;}
+		if (closedCheck(x+1, y-1, xDest, yDest, checked)) {checked[x][y] = TO_WALL; return true;}
+		if (closedCheck(x-1, y+1, xDest, yDest, checked)) {checked[x][y] = TO_WALL; return true;}
+		if (closedCheck(x+1, y+1, xDest, yDest, checked)) {checked[x][y] = TO_WALL; return true;}
 		
 		return false;
 		
+	}
+	
+	private boolean joinedCheck(int x, int y, int checked[][]) {
+		if (x < 1 || y < 1 || x > World.MAP_WIDTH-2 || y > World.MAP_HEIGHT-2 || map[x][y] == null || checked[x][y] == EXPLORED_JOIN) {
+			return false;
+		}
+		if (checked[x][y] == TO_WALL) {
+			return true;
+		}
+		checked[x][y] = EXPLORED_JOIN;
+		if (joinedCheck(x-1, y, checked)) {checked[x][y] = 0; return true;}
+		if (joinedCheck(x, y-1, checked)) {checked[x][y] = 0; return true;}
+		if (joinedCheck(x+1, y, checked)) {checked[x][y] = 0; return true;}
+		if (joinedCheck(x, y+1, checked)) {checked[x][y] = 0; return true;}
+		if (joinedCheck(x-1, y-1, checked)) {checked[x][y] = 0; return true;}
+		if (joinedCheck(x+1, y-1, checked)) {checked[x][y] = 0; return true;}
+		if (joinedCheck(x-1, y+1, checked)) {checked[x][y] = 0; return true;}
+		if (joinedCheck(x+1, y+1, checked)) {checked[x][y] = 0; return true;}
+		
+		return false;
 	}
 	private void fillTwos(int checked[][]) {
 		for (int x = 0; x < World.MAP_WIDTH; x++) {
@@ -149,5 +229,31 @@ public class InternalMap {
 			if (checked[xTemp][yTemp] == 2) { break; }
 		}
 		return true;
+	}
+	
+	private void fillAndWall(int checked[][], StateVector carPos) {
+		fillTwos(checked);
+		/* And if the car is not enclosed wall off the area */
+		if (checked[carPos.pos.x][carPos.pos.y] != TO_WALL) {
+			for (int x = 0; x < World.MAP_WIDTH; x++) {
+				for (int y = 0; y < World.MAP_HEIGHT; y++) {
+					if(checked[x][y] == TO_WALL && !(map[x][y] instanceof NullLogicTile)) {
+						map[x][y] = new NullLogicTile();
+					}
+					printTile(map[x][y]); //Used for bug testing
+				}
+				System.out.print("\n"); // Part of debugging
+			}
+		}
+	}
+	
+	private void printTile(LogicTile tile) {
+		if (tile == null) {
+			System.out.print("-");
+		} else if (tile instanceof NullLogicTile) {
+			System.out.print("W");
+		} else {
+			System.out.print(" ");
+		}
 	}
 }

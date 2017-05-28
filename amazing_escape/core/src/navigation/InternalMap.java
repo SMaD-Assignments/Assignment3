@@ -29,6 +29,10 @@ public class InternalMap {
 		map = new LogicTile[World.MAP_WIDTH][World.MAP_HEIGHT];
 	}
 	
+	/**
+	 * Takes the current view of the car and adds it to the internal map
+	 * @param mapSegment - current hashmap view
+	 */
 	public void updateMap(HashMap<Coordinate, LogicTile> mapSegment) {
 		for (Map.Entry<Coordinate, LogicTile> tile : mapSegment.entrySet()) {
 			if (map[tile.getKey().x][tile.getKey().y] == null) {
@@ -158,15 +162,28 @@ public class InternalMap {
 		}
 	}
 	
+	/**
+	 * Checks the input tile can reach the destination tile along walls
+	 * @param x - x coord of start
+	 * @param y - y coord of start
+	 * @param xDest - x coord of destination
+	 * @param yDest - y coord of destination
+	 * @param checked - int array used to prevent backtracking and check walled areas safety before commiting to map
+	 * @return true if coords joined by wall
+	 */
 	private boolean closedCheck(int x, int y, int xDest, int yDest, int checked[][]) {
-		if (x < 1 || y < 1 || x > World.MAP_WIDTH-2 || y > World.MAP_HEIGHT-2 || map[x][y] == null || checked[x][y] == 0) {
+		/* If outside map, unknown tile, not wall, already explored return null */
+		if (x < 1 || y < 1 || x > World.MAP_WIDTH-2 || y > World.MAP_HEIGHT-2 || map[x][y] == null || 
+				!(map[x][y] instanceof NullLogicTile) || checked[x][y] == EXPLORED) {
 			return false;
 		}
+		/* If at destination return true */
 		if (x == xDest && y == yDest) {
 			checked[x][y] = TO_WALL;
 			return true;
 		}
 		checked[x][y] = EXPLORED;
+		/* Otherwise add all adjacent tiles and recursively explore */
 		if (closedCheck(x-1, y, xDest, yDest, checked)) {checked[x][y] = TO_WALL; return true;}
 		if (closedCheck(x, y-1, xDest, yDest, checked)) {checked[x][y] = TO_WALL; return true;}
 		if (closedCheck(x+1, y, xDest, yDest, checked)) {checked[x][y] = TO_WALL; return true;}
@@ -180,8 +197,16 @@ public class InternalMap {
 		
 	}
 	
+	/**
+	 * Check if a wall is joined by walls to a tile marked to be changed to a wall
+	 * @param x - x coord of start
+	 * @param y - y coord of start
+	 * @param checked - The int array marking the tiles to be changed
+	 * @return true if connected
+	 */
 	private boolean joinedCheck(int x, int y, int checked[][]) {
-		if (x < 1 || y < 1 || x > World.MAP_WIDTH-2 || y > World.MAP_HEIGHT-2 || map[x][y] == null || checked[x][y] == EXPLORED_JOIN) {
+		if (x < 1 || y < 1 || x > World.MAP_WIDTH-2 || y > World.MAP_HEIGHT-2 || map[x][y] == null ||
+				!(map[x][y] instanceof NullLogicTile) || checked[x][y] == EXPLORED_JOIN) {
 			return false;
 		}
 		if (checked[x][y] == TO_WALL) {
@@ -199,6 +224,10 @@ public class InternalMap {
 		
 		return false;
 	}
+	
+	/**
+	 * Fills area enclosed by 2s with 2s
+	 */
 	private void fillTwos(int checked[][]) {
 		for (int x = 0; x < World.MAP_WIDTH; x++) {
 			for (int y = 0; y < World.MAP_HEIGHT; y++) {
@@ -209,6 +238,13 @@ public class InternalMap {
 		}
 	}
 	
+	/**
+	 * Checks if a tile is fully surrounded by 2s, not perfect, but required geometry to break is effectively immposible
+	 * @param checked - int array of 2 for walls
+	 * @param x - x coord of tile
+	 * @param y - y coord of tile
+	 * @return true if enclosed
+	 */
 	private boolean isClosed(int checked[][], int x, int y) {
 		int xTemp = x, yTemp = y;
 		for (xTemp = x; xTemp >= -1; xTemp--) {
@@ -231,9 +267,11 @@ public class InternalMap {
 		return true;
 	}
 	
+	/**
+	 * Fills checked with 2s and then overrides with NullLogicTiles on the map if necessary
+	 */
 	private void fillAndWall(int checked[][], StateVector carPos) {
 		fillTwos(checked);
-		/* And if the car is not enclosed wall off the area */
 		if (checked[carPos.pos.x][carPos.pos.y] != TO_WALL) {
 			for (int x = 0; x < World.MAP_WIDTH; x++) {
 				for (int y = 0; y < World.MAP_HEIGHT; y++) {
@@ -247,6 +285,9 @@ public class InternalMap {
 		}
 	}
 	
+	/**
+	 * Prints the tile (used in debugging to print map whenever walls are created
+	 */
 	private void printTile(LogicTile tile) {
 		if (tile == null) {
 			System.out.print("-");

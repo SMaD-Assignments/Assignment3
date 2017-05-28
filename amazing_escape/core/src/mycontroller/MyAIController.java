@@ -24,6 +24,8 @@ Thomas Miles - 626263
 Provides a controller that ties the methods used to drive the car together
 */
 public class MyAIController extends CarController{
+	private static float CRASH_DELTA = 0.5f;
+	
 	private TileInterpreter interpreter;
 	private PathfinderInterface pathfinder;
 	private float delta;
@@ -45,7 +47,9 @@ public class MyAIController extends CarController{
 		/* Then pass the interpreted map to the pathfinder to find a path to take */
 		StateVector aim = pathfinder.findMove(map, carV);
 
-		move(aim);
+		if(!move(aim)) {
+			specialMove();
+		}
 	}
 	
 	private boolean move(StateVector aim) {
@@ -64,8 +68,10 @@ public class MyAIController extends CarController{
 		if (!aim.pos.equals(peek.getCoordinate())) {
 			if (getTileTurn(currentCor, aim.pos, peek.getCoordinate()) == WorldSpatial.RelativeDirection.RIGHT) {
 				turnRight(this.delta);
-			} else {
+			} else if (getTileTurn(currentCor, aim.pos, peek.getCoordinate()) == WorldSpatial.RelativeDirection.LEFT) {
 				turnLeft(this.delta);
+			} else {
+				return false;
 			}
 		} else {
 			/* If so match aim angle */
@@ -84,7 +90,28 @@ public class MyAIController extends CarController{
 			applyReverseAcceleration();
 		}
 		
-		return false;
+		return true;
+	}
+	
+	private void specialMove() {
+		float right, left;
+		right = getAngle() + 90;
+		left = getAngle() - 90;
+		if (right > 360) {right -= 360;}
+		else if (left < 0) {left += 360;}
+		
+		/* Peek ahead and see if car will crash if turning if possible turn */
+		PeekTuple peek = peek(getRawVelocity(), left, WorldSpatial.RelativeDirection.LEFT, CRASH_DELTA);
+		if (peek.getReachable()) {
+			turnLeft(this.delta);
+		} else {
+			peek = peek(getRawVelocity(), right, WorldSpatial.RelativeDirection.RIGHT, CRASH_DELTA);
+			if (peek.getReachable()) {
+				turnRight(this.delta);
+			}
+		}
+		applyReverseAcceleration();
+		
 	}
 
 	private HashMap<Coordinate, LogicTile> getProcessedMap() {
@@ -127,7 +154,7 @@ public class MyAIController extends CarController{
 		}
 		else {
 			/* For U turns always turn right for consistency */
-			return WorldSpatial.RelativeDirection.RIGHT;
+			return null;
 		}
 	}
 	

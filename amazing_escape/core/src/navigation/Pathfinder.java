@@ -39,7 +39,7 @@ public class Pathfinder implements PathfinderInterface {
 		ArrayList<Coordinate> edgeTiles;
 		Coordinate searchStart;
 		this.map.updateMap(map);
-		this.map.wallOff(carV);
+		map = this.map.wallOff(carV);
 		// TODO does wallOff fix the currentView (map)?, im assuming it does for now
 
 		// TODO maybe a scanForFinish method?

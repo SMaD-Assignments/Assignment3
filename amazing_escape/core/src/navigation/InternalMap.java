@@ -6,7 +6,9 @@ import java.util.Map;
 import tilelogic.LogicTile;
 import tilelogic.NullLogicTile;
 import tilelogic.StateVector;
+import tiles.MapTile;
 import utilities.Coordinate;
+import world.Car;
 import world.World;
 
 /** SWEN30006 Software Modeling and Design
@@ -44,7 +46,7 @@ public class InternalMap {
 	 * Walls of the map to prevent backtracking
 	 * @param carPos - The current position of the car
 	 */
-	public void wallOff(StateVector carPos) {
+	public HashMap<Coordinate, LogicTile> wallOff(StateVector carPos) {
 		/* Determine how the car should wall of behind it */
 		int wallH = 0, wallV = 0;
 		if (carPos.angle >= 337 || carPos.angle < 23) {wallH = -1;}
@@ -106,7 +108,6 @@ public class InternalMap {
 				fillAndWall(checked, carPos);
 			}
 			
-			
 		}
 		
 		if (wallV != 0) {
@@ -157,9 +158,18 @@ public class InternalMap {
 			if (canWall) {
 				fillAndWall(checked, carPos);
 			}
-			
-			
 		}
+		HashMap<Coordinate,LogicTile> subMap = new HashMap<Coordinate,LogicTile>();
+		for(int xSub = carPos.pos.x - Car.VIEW_SQUARE; xSub <= carPos.pos.x+Car.VIEW_SQUARE; xSub++){
+			for(int ySub = carPos.pos.y - Car.VIEW_SQUARE; ySub <= carPos.pos.y+Car.VIEW_SQUARE; ySub++){
+				if(xSub >= 0 && ySub >= 0 && xSub < World.MAP_WIDTH && ySub < World.MAP_HEIGHT) {
+					LogicTile tile = map[xSub][ySub];
+					subMap.put(new Coordinate(xSub,ySub),tile);
+				}
+			}
+		}
+		
+		return subMap;
 	}
 	
 	/**

@@ -108,7 +108,7 @@ public class InternalMap {
 			}
 			
 		}
-		
+		/* Wall of behind vertical*/
 		if (wallV != 0) {
 			int wallY = carPos.pos.y + wallV;
 			int xUp, xDown, checked[][] = new int[World.MAP_WIDTH][World.MAP_HEIGHT];
@@ -164,6 +164,9 @@ public class InternalMap {
 				if(xSub >= 0 && ySub >= 0 && xSub < World.MAP_WIDTH && ySub < World.MAP_HEIGHT) {
 					LogicTile tile = map[xSub][ySub];
 					subMap.put(new Coordinate(xSub,ySub),tile);
+				} else {
+					LogicTile tile = new NullLogicTile();
+					subMap.put(new Coordinate(xSub,ySub),tile);
 				}
 			}
 		}
@@ -182,7 +185,7 @@ public class InternalMap {
 	 */
 	private boolean closedCheck(int x, int y, int xDest, int yDest, int checked[][]) {
 		/* If outside map, unknown tile, not wall, already explored return null */
-		if (x < 1 || y < 1 || x > World.MAP_WIDTH-2 || y > World.MAP_HEIGHT-2 || map[x][y] == null || 
+		if (x < 0 || y < 0 || x > World.MAP_WIDTH-1 || y > World.MAP_HEIGHT-1 || map[x][y] == null || 
 				!(map[x][y] instanceof NullLogicTile) || checked[x][y] == EXPLORED) {
 			return false;
 		}
@@ -214,7 +217,7 @@ public class InternalMap {
 	 * @return true if connected
 	 */
 	private boolean joinedCheck(int x, int y, int checked[][]) {
-		if (x < 1 || y < 1 || x > World.MAP_WIDTH-2 || y > World.MAP_HEIGHT-2 || map[x][y] == null ||
+		if (x < 0 || y < 0 || x > World.MAP_WIDTH-1 || y > World.MAP_HEIGHT-1 || map[x][y] == null ||
 				!(map[x][y] instanceof NullLogicTile) || checked[x][y] == EXPLORED_JOIN) {
 			return false;
 		}
@@ -282,8 +285,8 @@ public class InternalMap {
 	private void fillAndWall(int checked[][], StateVector carPos) {
 		fillTwos(checked);
 		if (checked[carPos.pos.x][carPos.pos.y] != TO_WALL) {
-			for (int x = 0; x < World.MAP_WIDTH; x++) {
-				for (int y = 0; y < World.MAP_HEIGHT; y++) {
+			for (int y = World.MAP_HEIGHT-1; y >= 0; y--) {
+				for (int x = 0; x < World.MAP_WIDTH; x++) {
 					if(checked[x][y] == TO_WALL && !(map[x][y] instanceof NullLogicTile)) {
 						map[x][y] = new NullLogicTile();
 					}

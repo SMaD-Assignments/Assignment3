@@ -32,6 +32,7 @@ public class Pathfinder implements PathfinderInterface {
 
 	@Override
 	public StateVector findMove(HashMap<Coordinate, LogicTile> map, StateVector carV) {
+		
 		System.out.println("Start: findmove");
 		best = -Integer.MAX_VALUE;
 		ArrayList<Coordinate> edgeTiles;
@@ -255,7 +256,7 @@ return null;
 	 * @return ArrayList ordered from 0 being first tile to explore
 	 */
 	private ArrayList<Coordinate> getEdgeTiles(HashMap<Coordinate, LogicTile> view, Coordinate start) {
-
+System.out.println("i am a : "+start.toString());
 		// TODO I hate this method but cbf, also for some reason it thinks c2 is going to not get initialised or some
 		// TODO shit. fuck knows really
 

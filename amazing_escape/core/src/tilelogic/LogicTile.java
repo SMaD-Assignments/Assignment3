@@ -1,7 +1,5 @@
 package tilelogic;
 
-import navigation.Move;
-import sun.java2d.opengl.WGLSurfaceData;
 import world.WorldSpatial;
 
 /** SWEN30006 Software Modeling and Design

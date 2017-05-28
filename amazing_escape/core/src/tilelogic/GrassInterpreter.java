@@ -26,7 +26,7 @@ public class GrassInterpreter implements TileInterpreter {
 	public HashMap<Coordinate, Object> ProcessMap(HashMap<Coordinate, Object> map) {
 		for (Map.Entry<Coordinate, Object> tile : map.entrySet()) {
 			if (tile.getValue() instanceof GrassTrap) {
-				map.replace(tile.getKey(), tile.getValue(), new GrassLogicTile());
+				map.replace(tile.getKey(), tile.getValue(), new GrassLogicTile(tile.getKey()));
 			}
 		}
 		return map;

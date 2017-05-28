@@ -36,7 +36,7 @@ public class BasicInterpreter  implements TileInterpreter {
 				}
 				else {
 					// Name is used to recognize end tiles, etc.
-					map.replace(tile.getKey(), tile.getValue(), new OpenLogicTile(((MapTile)tile.getValue()).getName()));
+					map.replace(tile.getKey(), tile.getValue(), new OpenLogicTile(tile.getKey()));
 				}
 				
 			}

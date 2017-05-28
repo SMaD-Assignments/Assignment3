@@ -1,6 +1,5 @@
 package tilelogic;
 
-import navigation.Move;
 import utilities.Coordinate;
 import world.WorldSpatial;
 

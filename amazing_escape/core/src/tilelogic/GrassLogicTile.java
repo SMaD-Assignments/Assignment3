@@ -1,7 +1,5 @@
 package tilelogic;
 
-import mycontroller.MyAIController;
-import navigation.Move;
 import utilities.Coordinate;
 import world.WorldSpatial;
 

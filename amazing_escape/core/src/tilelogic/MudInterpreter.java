@@ -25,7 +25,7 @@ public class MudInterpreter  implements TileInterpreter {
 	public HashMap<Coordinate, Object> ProcessMap(HashMap<Coordinate, Object> map) {
 		for (Map.Entry<Coordinate, Object> tile : map.entrySet()) {
 			if (tile.getValue() instanceof MudTrap) {
-				map.replace(tile.getKey(), tile.getValue(), new MudLogicTile());
+				map.replace(tile.getKey(), tile.getValue(), new MudLogicTile(tile.getKey()));
 			}
 		}
 		return map;

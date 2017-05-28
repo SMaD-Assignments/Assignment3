@@ -25,7 +25,7 @@ public class LavaInterpreter implements TileInterpreter {
 	public HashMap<Coordinate, Object> ProcessMap(HashMap<Coordinate, Object> map) {
 		for (Map.Entry<Coordinate, Object> tile : map.entrySet()) {
 			if (tile.getValue() instanceof LavaTrap) {
-				map.replace(tile.getKey(), tile.getValue(), new LavaLogicTile());
+				map.replace(tile.getKey(), tile.getValue(), new LavaLogicTile(tile.getKey()));
 			}
 		}
 		return map;
